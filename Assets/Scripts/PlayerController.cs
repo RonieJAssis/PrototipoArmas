@@ -7,8 +7,11 @@ public class PlayerController : MonoBehaviour {
 
 	private Animator anim;
 	private Rigidbody2D rb2d;
+    private int inventario;
+    private int arma1;
+    private int arma2;
 
-	public Transform posPe;
+    public Transform posPe;
 	[HideInInspector] public bool tocaChao = false;
 
 
@@ -82,5 +85,23 @@ public class PlayerController : MonoBehaviour {
 			Destroy(gameObject);
 		}
 	}
-	
+
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.tag == "Arma2")
+        {
+
+            other.gameObject.SetActive(false);
+            inventario = arma2;
+
+        }
+        if (other.tag == "Arma1")
+        {
+
+            other.gameObject.SetActive(false);
+            inventario = arma1;
+        }
+    }
 }
+
+
