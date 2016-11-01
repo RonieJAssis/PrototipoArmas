@@ -7,10 +7,13 @@ public class PlayerController : MonoBehaviour {
 
 	private Animator anim;
 	private Rigidbody2D rb2d;
-    private int inventario;
-    private int arma1;
-    private int arma2;
-
+    
+    private bool arma1 = false ;
+    private bool arma2 = false ;
+    private bool armado1 = false ;
+    private bool armado2 = false ;
+    private bool desarmado= true ;
+    
     public Transform posPe;
 	[HideInInspector] public bool tocaChao = false;
 
@@ -19,19 +22,16 @@ public class PlayerController : MonoBehaviour {
 	public float ForcaPulo = 1000f;
 	[HideInInspector] public bool viradoDireita = true;
 	private bool pula = false;
-    public Image vida;
-	private MensagemControle MC;
+  
 
 	void Start () {
 		anim = GetComponent<Animator> ();
 		rb2d = GetComponent<Rigidbody2D> ();
 
-		GameObject mensagemControleObject = GameObject.FindWithTag ("MensagemControle");
-		if (mensagemControleObject != null) {
-			MC = mensagemControleObject.GetComponent<MensagemControle> ();
-		}
-	}
-	
+      
+
+
+    }
 	
 	void Update () {
 		//Implementar Pulo Aqui!
@@ -39,40 +39,95 @@ public class PlayerController : MonoBehaviour {
 		if(Input.GetKeyDown("space") && tocaChao){
 			//pula
 			pula = true;
-          
+            
 
-		}
+
+        }
 	}
 
 
 	void FixedUpdate()
 	{
-		float translationY = 0;
-		float translationX = Input.GetAxis ("Horizontal") * Velocidade;
-		transform.Translate (translationX, translationY, 0);
-		transform.Rotate (0, 0, 0);
-		if (translationX != 0 && tocaChao) {
-			anim.SetTrigger ("corre");
-		} else {
-			anim.SetTrigger("parado");
-		}
+        float translationY = 0;
+        float translationX = Input.GetAxis("Horizontal") * Velocidade;
+        transform.Translate(translationX, translationY, 0);
+        transform.Rotate(0, 0, 0);
+        if (translationX != 0 && tocaChao && desarmado == true && armado1 == false && armado2 == false)
+        {
+            anim.SetTrigger("corre");
+        }
+        if (translationX == 0 && tocaChao && desarmado == true && armado1 == false && armado2 == false)
+        {
+            anim.SetTrigger("parado");
+        }
+        if (translationX != 0 && tocaChao && desarmado == false && armado1 == true && armado2 == false)
+        {
+            anim.SetTrigger("Selecionando arma 1");
+        }
+        if (translationX == 0 && tocaChao && desarmado == false && armado1 == true && armado2 == false)
+        {
+            anim.SetTrigger("parado");
+        }
+        if (translationX != 0 && tocaChao && desarmado == false && armado1 == false && armado2 == true)
+        {
+            anim.SetTrigger("Selecionando arma 2");
+        }
+        if (translationX == 0 && tocaChao && desarmado == false && armado1 == false && armado2 == true)
+        {
+            anim.SetTrigger("parado");
+        }
 
-		//Programar o pulo Aqui! 
-		if(pula == true){
-			anim.SetTrigger("pula");
-			rb2d.AddForce(new Vector2 (0f,ForcaPulo));
-			pula = false;
-		}
+        //Programar o pulo Aqui! 
+        if (pula == true)
+        {
+            anim.SetTrigger("pula");
+            rb2d.AddForce(new Vector2(0f, ForcaPulo));
+            pula = false;
+        }
 
-		if (translationX > 0 && !viradoDireita) {
-			Flip ();
-		} else if (translationX < 0 && viradoDireita) {
-			Flip();
-		}
-        if (Input.GetMouseButtonDown(0))
+        if (translationX > 0 && !viradoDireita)
+        {
+
+            Flip();
+        }
+        else if (translationX < 0 && viradoDireita)
+        {
+
+            Flip();
+        }
+
+
+
+        if (Input.GetMouseButtonDown(0) && desarmado == false && armado1 == true && armado2 == false)
         {
             anim.SetTrigger("Atirando 1");
         }
+        if (Input.GetMouseButtonDown(0) && desarmado == false && armado1 == false && armado2 == true)
+        {
+            anim.SetTrigger("Atirando 2");
+        }
+
+
+
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            desarmado = true;
+            armado1 = false;
+            armado2 = false;
+        }
+        if (Input.GetKeyDown(KeyCode.T) && arma1 == true)
+        {
+            desarmado = false;
+            armado1 = true;
+            armado2 = false;
+        }
+        if (Input.GetKeyDown(KeyCode.Y) && arma2 == true)
+        {
+            desarmado = false;
+            armado1 = false;
+            armado2 = true;
+        }
+
 
 
     }
@@ -84,14 +139,6 @@ public class PlayerController : MonoBehaviour {
 		transform.localScale = escala;
 	}
 
-	public void SubtraiVida()
-	{
-		vida.fillAmount-=0.1f;
-		if (vida.fillAmount <= 0) {
-			MC.GameOver();
-			Destroy(gameObject);
-		}
-	}
 
     void OnTriggerEnter2D(Collider2D other)
     {
@@ -99,16 +146,30 @@ public class PlayerController : MonoBehaviour {
         {
 
             other.gameObject.SetActive(false);
-            inventario = arma2;
+            arma2 = true;
+            
 
         }
         if (other.tag == "Arma1")
         {
 
             other.gameObject.SetActive(false);
-            inventario = arma1;
+            arma1 = true;
+
         }
+      
+    }
+
+    
+  
+    void Armado2()
+    {
+        desarmado = false;
+        armado1 = false;
+        armado2 = true;
     }
 }
+
+
 
 
