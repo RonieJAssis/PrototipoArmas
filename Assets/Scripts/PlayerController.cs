@@ -39,6 +39,8 @@ public class PlayerController : MonoBehaviour {
 		if(Input.GetKeyDown("space") && tocaChao){
 			//pula
 			pula = true;
+          
+
 		}
 	}
 
@@ -67,9 +69,14 @@ public class PlayerController : MonoBehaviour {
 		} else if (translationX < 0 && viradoDireita) {
 			Flip();
 		}
+        if (Input.GetMouseButtonDown(0))
+        {
+            anim.SetTrigger("Atirando 1");
+        }
 
-	}
-	void Flip()
+
+    }
+    void Flip()
 	{
 		viradoDireita = !viradoDireita;
 		Vector3 escala = transform.localScale;
